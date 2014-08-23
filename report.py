@@ -129,6 +129,9 @@ class ContentToMarkDown(object):
     def md_bullet( self, text ):
         self.fp.write( u"* " + text + u"\n" )
 
+    def fmt_anchor( self, text, anchor ):
+        return "[{}](#{})".format(text, anchor)
+
     def build_clan_list(self):
 
         if len( self.data.clans ) == 0:
@@ -137,7 +140,7 @@ class ContentToMarkDown(object):
         self.md_h2( u"Clans" )
 
         for c in sorted( self.data.clans, key = lambda x: x.name ):
-            self.md_bullet( c.name )
+            self.md_bullet( self.fmt_anchor( c.name, c.id ) )
 
         #self.fp.write( u"\n" )
 
