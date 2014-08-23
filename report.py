@@ -140,7 +140,7 @@ class ContentToMarkDown(object):
         self.md_h2( u"Clans" )
 
         for c in sorted( self.data.clans, key = lambda x: x.name ):
-            self.md_bullet( self.fmt_anchor( c.name, c.id ) )
+            self.md_bullet( c.name )
 
         #self.fp.write( u"\n" )
 
