@@ -98,8 +98,8 @@ class ContentToMarkDown(object):
 
             self.build_merit_list   ()
             self.build_flaw_list    ()
-            #self.build_kata_list    ()
-            #self.build_kiho_list    ()
+            self.build_kata_list    ()
+            self.build_kiho_list    ()
 
     def md_sethext( self, text, char ):
         self.fp.write( u"\n" + text + u"\n" )
