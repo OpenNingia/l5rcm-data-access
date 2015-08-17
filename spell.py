@@ -48,7 +48,7 @@ class Spell(object):
         f.element  = read_attribute(elem, 'element')
         f.tags     = read_tag_list(elem)
         f.require  = read_requirements_list(elem)
-        f.desc     = read_sub_element_text(elem, 'Description', "")
+        f.desc     = read_sub_element_text(elem, 'Description', "").strip()
         f.raises = []
         if elem.find('Raises') is not None:
             for se in elem.find('Raises').iter():
