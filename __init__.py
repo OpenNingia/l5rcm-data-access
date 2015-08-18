@@ -15,15 +15,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from clan        import *
-from family      import *
-from school      import *
-from skill       import *
-from spell       import *
-from perk        import *
-from powers      import *
-from weapon      import *
-from generic     import *
+from clan import *
+from family import *
+from school import *
+from skill import *
+from spell import *
+from perk import *
+from powers import *
+from weapon import *
+from generic import *
 from requirements import *
 
 import os
@@ -31,18 +31,19 @@ import json
 import xml.etree.ElementTree
 import xml.etree.cElementTree as ET
 
+
 class DataManifest(object):
     def __init__(self, d):
-        self.id           = d['id']
+        self.id = d['id']
         self.display_name = None
-        self.language     = None
-        self.version      = None
-        self.update_uri   = None
+        self.language = None
+        self.version = None
+        self.update_uri = None
         self.download_uri = None
-        self.authors      = []
-        self.active       = True
-        self.path         = None
-        self.min_cm_ver   = None
+        self.authors = []
+        self.active = True
+        self.path = None
+        self.min_cm_ver = None
 
         if 'display_name' in d:
             self.display_name = d['display_name']
@@ -59,47 +60,75 @@ class DataManifest(object):
         if 'min-cm-version' in d:
             self.min_cm_ver = d['min-cm-version']
 
+
+def append_to(collection, item):
+    if item in collection:
+        i = collection.index(item)
+        collection[i] = item
+    else:
+        collection.append(item)
+
+
 class Data(object):
-    def __init__(self, data_dirs = [], blacklist = []):
+    def __init__(self, data_dirs=None, blacklist=None):
+        if not blacklist:
+            blacklist = []
+        if not data_dirs:
+            data_dirs = []
+
+        self.data_dirs = data_dirs
+        self.blacklist = blacklist
+
+        self.packs = []
+        self.clans = []
+        self.families = []
+        self.schools = []
+        self.spells = []
+        self.skills = []
+        self.merits = []
+        self.flaws = []
+        self.katas = []
+        self.kihos = []
+        self.weapons = []
+        self.armors = []
+        self.skcategs = []
+        self.perktypes = []
+        self.weapon_effects = []
+        self.rings = []
+        self.traits = []
+
         self.rebuild(data_dirs, blacklist)
 
-    def rebuild(self, data_dirs = [], blacklist = []):
+    def rebuild(self, data_dirs=None, blacklist=None):
+        if not blacklist:
+            blacklist = []
+        if not data_dirs:
+            data_dirs = []
+
         self.data_dirs = data_dirs
 
-        self.blacklist = blacklist or []
-        self.packs     = []
-
-        self.clans     = []
-        self.families  = []
-        self.schools   = []
-
-        self.spells    = []
-        self.skills    = []
-        self.merits    = []
-        self.flaws     = []
-        self.katas     = []
-        self.kihos     = []
-
-        self.weapons   = []
-        self.armors    = []
-
-        self.skcategs       = []
-        self.perktypes      = []
+        self.blacklist = blacklist
+        self.packs = []
+        self.clans = []
+        self.families = []
+        self.schools = []
+        self.spells = []
+        self.skills = []
+        self.merits = []
+        self.flaws = []
+        self.katas = []
+        self.kihos = []
+        self.weapons = []
+        self.armors = []
+        self.skcategs = []
+        self.perktypes = []
         self.weapon_effects = []
-
-        self.rings  = []
+        self.rings = []
         self.traits = []
 
         for d in data_dirs:
             if d and os.path.exists(d):
                 self.load_data(d)
-
-    def append_to(self, collection, item):
-        if item in collection:
-            i = collection.index(item)
-            collection[i] = item
-        else:
-            collection.append(item)
 
     def get_packs(self):
         return self.packs
@@ -147,90 +176,90 @@ class Data(object):
         return self.__load_xml(path)
 
     def __load_xml(self, xml_file):
-        #print('load data from {0}'.format(xml_file))
+        # print('load data from {0}'.format(xml_file))
         tree = ET.parse(xml_file)
         root = tree.getroot()
         if root is None or root.tag != 'L5RCM':
             raise Exception("Not an L5RCM data file")
         for elem in list(root):
             if elem.tag == 'Clan':
-                self.append_to(self.clans, Clan.build_from_xml(elem))
+                append_to(self.clans, Clan.build_from_xml(elem))
             elif elem.tag == 'Family':
-                self.append_to(self.families, Family.build_from_xml(elem))
+                append_to(self.families, Family.build_from_xml(elem))
             elif elem.tag == 'School':
-                self.append_to(self.schools, School.build_from_xml(elem))
+                append_to(self.schools, School.build_from_xml(elem))
             elif elem.tag == 'SkillDef':
-                self.append_to(self.skills, Skill.build_from_xml(elem))
+                append_to(self.skills, Skill.build_from_xml(elem))
             elif elem.tag == 'SpellDef':
-                self.append_to(self.spells, Spell.build_from_xml(elem))
+                append_to(self.spells, Spell.build_from_xml(elem))
             elif elem.tag == 'Merit':
-                self.append_to(self.merits, Perk.build_from_xml(elem))
+                append_to(self.merits, Perk.build_from_xml(elem))
             elif elem.tag == 'Flaw':
-                self.append_to(self.flaws, Perk.build_from_xml(elem))
+                append_to(self.flaws, Perk.build_from_xml(elem))
             elif elem.tag == 'SkillCateg':
-                self.append_to(self.skcategs, SkillCateg.build_from_xml(elem))
+                append_to(self.skcategs, SkillCateg.build_from_xml(elem))
             elif elem.tag == 'KataDef':
-                self.append_to(self.katas, Kata.build_from_xml(elem))
+                append_to(self.katas, Kata.build_from_xml(elem))
             elif elem.tag == 'KihoDef':
-                self.append_to(self.kihos, Kiho.build_from_xml(elem))
+                append_to(self.kihos, Kiho.build_from_xml(elem))
             elif elem.tag == 'PerkCateg':
-                self.append_to(self.perktypes, PerkCateg.build_from_xml(elem))
+                append_to(self.perktypes, PerkCateg.build_from_xml(elem))
             elif elem.tag == 'EffectDef':
-                self.append_to(self.weapon_effects, WeaponEffect.build_from_xml(elem))
+                append_to(self.weapon_effects, WeaponEffect.build_from_xml(elem))
             elif elem.tag == 'Weapon':
-                self.append_to(self.weapons, Weapon.build_from_xml(elem))
+                append_to(self.weapons, Weapon.build_from_xml(elem))
             elif elem.tag == 'Armor':
-                self.append_to(self.armors, Armor.build_from_xml(elem))
+                append_to(self.armors, Armor.build_from_xml(elem))
             elif elem.tag == 'RingDef':
-                self.append_to(self.rings, GenericId.build_from_xml(elem))
+                append_to(self.rings, GenericId.build_from_xml(elem))
             elif elem.tag == 'TraitDef':
-                self.append_to(self.traits, GenericId.build_from_xml(elem))
+                append_to(self.traits, GenericId.build_from_xml(elem))
 
         del root
         del tree
 
     def __log_imported_data(self, source):
-        map = {}
-        map['clans'] = self.clans
-        map['families'] = self.families
-        map['schools'] = self.schools
-        map['spells'] = self.spells
-        map['skills'] = self.skills
-        map['merits'] = self.merits
-        map['flaws'] = self.flaws
-        map['katas'] = self.katas
-        map['kihos'] = self.kihos
-        map['weapons'] = self.weapons
-        map['armors'] = self.armors
-        map['skcategs'] = self.skcategs
-        map['perktypes'] = self.perktypes
-        map['weapon_effects'] = self.weapon_effects
+        map_ = {'clans': self.clans,
+                'families': self.families,
+                'schools': self.schools,
+                'spells': self.spells,
+                'skills': self.skills,
+                'merits': self.merits,
+                'flaws': self.flaws,
+                'katas': self.katas,
+                'kihos': self.kihos,
+                'weapons': self.weapons,
+                'armors': self.armors,
+                'skcategs': self.skcategs,
+                'perktypes': self.perktypes,
+                'weapon_effects': self.weapon_effects}
 
         print('IMPORTED DATA', source)
-        for k in map:
-            print("imported {0} {1}".format( len(map[k]), k))
+        for k in map_:
+            print("imported {0} {1}".format(len(map_[k]), k))
+
 
 class DataFile(Data):
-    def __init__(self, fp = None):
+    def __init__(self, fp=None):
         super(DataFile, self).__init__()
 
         self.path = None
         if fp is not None:
             self.load_from_file(fp)
 
-    def save(self, new_path = None):
+    def save(self, new_path=None):
 
         if new_path:
             self.path = new_path
 
-        print( 'saving to', self.path )
+        print('saving to', self.path)
 
         import lxml.etree as XML
         root = XML.Element('L5RCM')
 
-        stuff = ( self.clans + self.families + self.schools + self.spells +
-                     self.skills + self.katas + self.kihos + self.weapons +
-                     self.armors + self.skcategs + self.perktypes + self.weapon_effects )
+        stuff = (self.clans + self.families + self.schools + self.spells +
+                 self.skills + self.katas + self.kihos + self.weapons +
+                 self.armors + self.skcategs + self.perktypes + self.weapon_effects)
 
         for e in stuff:
             e.write_into(root)
@@ -248,6 +277,6 @@ class DataFile(Data):
             f.write_into("TraitDef", root)
 
         try:
-            XML.ElementTree(root).write(self.path, pretty_print = True, encoding='UTF-8', xml_declaration=True)
+            XML.ElementTree(root).write(self.path, pretty_print=True, encoding='UTF-8', xml_declaration=True)
         except Exception as ex:
             print('save failed', ex)

@@ -49,10 +49,9 @@ class Requirement(object):
         return self.text
 
     def in_range(self, value):
-        return value >= self.min and value <= self.max
+        return self.min <= value <= self.max
 
     def match(self, pc, dstore):
-        import models
 
         if self.field.startswith('*'):
             return self.match_wildcard(pc, dstore)
