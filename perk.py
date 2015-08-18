@@ -19,9 +19,13 @@ from xmlutils import *
 import uuid
 import lxml.etree as ET
 
-class PerkCateg(object):
+from packitem import PackItem
+
+
+class PerkCateg(PackItem):
 
     def __init__(self):
+        super(PerkCateg, self).__init__()
         self.id     = uuid.uuid1().hex
         self.name   = None
 

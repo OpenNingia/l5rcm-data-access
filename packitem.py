@@ -15,41 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import uuid
-import lxml.etree as ET
 
-from packitem import PackItem
-
-
-class Clan(PackItem):
-
+class PackItem(object):
     def __init__(self):
-        super(Clan, self).__init__()
+        self.source_pack = None
 
-        self.id   = uuid.uuid1().hex
-        self.name = None
-
-    @staticmethod
-    def build_from_xml(elem):
-        c = Clan()
-        c.name = elem.attrib['name']
-        c.id   = elem.attrib['id']
-        return c
-
-    def write_into(self, elem):
-        ec = ET.SubElement(elem, 'Clan', {'name': self.name, 'id': self.id})
-
-    def __str__(self):
-        return self.name or self.id
-
-    def __unicode__(self):
-        return self.name or self.id
-
-    def __eq__(self, obj):
-        return obj and obj.id == self.id
-
-    def __ne__(self, obj):
-        return not self.__eq__(obj)
-
-    def __hash__(self):
-        return self.id.__hash__()
+    @property
+    def pack(self):
+        return self.source_pack

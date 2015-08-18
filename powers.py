@@ -15,14 +15,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from requirements import Requirement, RequirementOption, read_requirements_list
+from requirements import read_requirements_list
+from packitem import PackItem
 from xmlutils import *
 import uuid
-import lxml.etree as ET
 
-class Kiho(object):
+
+class Kiho(PackItem):
 
     def __init__(self):
+        super(Kiho, self).__init__()
+
         self.id     = uuid.uuid1().hex
         self.name    = None
         self.element = None
@@ -64,9 +67,11 @@ class Kiho(object):
     def __hash__(self):
         return self.id.__hash__()
 
-class Kata(object):
+class Kata(PackItem):
 
     def __init__(self):
+        super(Kata, self).__init__()
+
         self.id     = uuid.uuid1().hex
         self.name    = None
         self.element = None

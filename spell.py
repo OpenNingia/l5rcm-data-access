@@ -15,14 +15,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from requirements import Requirement, RequirementOption, read_requirements_list
+from requirements import read_requirements_list
 from xmlutils import *
 import uuid
-import lxml.etree as ET
+from packitem import PackItem
 
-class Spell(object):
+
+class Spell(PackItem):
 
     def __init__(self):
+        super(Spell, self).__init__()
         self.id    = uuid.uuid1().hex
 
         self.name     = None

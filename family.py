@@ -18,9 +18,14 @@
 import uuid
 import lxml.etree as ET
 
-class Family(object):
+from packitem import PackItem
+
+
+class Family(PackItem):
 
     def __init__(self):
+        super(Family, self).__init__()
+
         self.id     = uuid.uuid1().hex
         self.name   = None
         self.clanid = None

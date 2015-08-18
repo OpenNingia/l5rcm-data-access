@@ -16,11 +16,13 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import uuid
-import lxml.etree as ET
+from packitem import PackItem
 
-class WeaponEffect(object):
+
+class WeaponEffect(PackItem):
 
     def __init__(self):
+        super(WeaponEffect, self).__init__()
         self.id    = uuid.uuid1().hex
         self.text  = None
 
@@ -34,9 +36,11 @@ class WeaponEffect(object):
     def write_into(self, elem):
         pass
 
-class Armor(object):
+
+class Armor(PackItem):
 
     def __init__(self):
+        super(Armor, self).__init__()
         self.name     = None
         self.tn       = None
         self.rd       = None
@@ -65,9 +69,11 @@ class Armor(object):
     def __unicode__(self):
         return self.name
 
-class Weapon(object):
+
+class Weapon(PackItem):
 
     def __init__(self):
+        super(Weapon, self).__init__()
         self.name         = None
         self.skill        = None
         self.cost         = None

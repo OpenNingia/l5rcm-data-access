@@ -61,7 +61,10 @@ class DataManifest(object):
             self.min_cm_ver = d['min-cm-version']
 
 
-def append_to(collection, item):
+def append_to(collection, item, pack):
+
+    item.source_pack = pack
+
     if item in collection:
         i = collection.index(item)
         collection[i] = item
@@ -133,8 +136,7 @@ class Data(object):
     def get_packs(self):
         return self.packs
 
-    def load_data(self, data_path):
-        # iter through all the data tree and import all xml files
+    def scan_data_folder_for_packs(self, data_path):
         for path, dirs, files in os.walk(data_path):
             dirn = os.path.basename(path)
 
@@ -154,9 +156,16 @@ class Data(object):
             except Exception as ex:
                 print(ex)
 
-            if dirn in self.blacklist:
-                print('{0} is blacklisted'.format(dirn))
-                continue
+    def load_data_from_pack(self, pack):
+
+        if not pack:
+            return
+
+        if not pack.active:
+            print('{0} is blacklisted'.format(pack.id))
+            return
+
+        for path, dirs, files in os.walk(pack.path):
 
             for file_ in files:
                 if file_.startswith('.') or file_.endswith('~'):
@@ -164,18 +173,27 @@ class Data(object):
                 if not file_.endswith('.xml'):
                     continue
                 try:
-                    self.__load_xml(os.path.join(path, file_))
+                    self.__load_xml(os.path.join(path, file_), pack)
                 except Exception as e:
                     print("cannot parse file {0}".format(file_))
                     import traceback
                     traceback.print_exc()
+
+    def load_data(self, data_path):
+        # iter through all the data tree and import all xml files
+
+        self.scan_data_folder_for_packs(data_path)
+
+        for p in self.packs:
+            self.load_data_from_pack(p)
+
         self.__log_imported_data(data_path)
 
     def load_from_file(self, path):
         self.rebuild()
         return self.__load_xml(path)
 
-    def __load_xml(self, xml_file):
+    def __load_xml(self, xml_file, pack=None):
         # print('load data from {0}'.format(xml_file))
         tree = ET.parse(xml_file)
         root = tree.getroot()
@@ -183,37 +201,37 @@ class Data(object):
             raise Exception("Not an L5RCM data file")
         for elem in list(root):
             if elem.tag == 'Clan':
-                append_to(self.clans, Clan.build_from_xml(elem))
+                append_to(self.clans, Clan.build_from_xml(elem), pack)
             elif elem.tag == 'Family':
-                append_to(self.families, Family.build_from_xml(elem))
+                append_to(self.families, Family.build_from_xml(elem), pack)
             elif elem.tag == 'School':
-                append_to(self.schools, School.build_from_xml(elem))
+                append_to(self.schools, School.build_from_xml(elem), pack)
             elif elem.tag == 'SkillDef':
-                append_to(self.skills, Skill.build_from_xml(elem))
+                append_to(self.skills, Skill.build_from_xml(elem), pack)
             elif elem.tag == 'SpellDef':
-                append_to(self.spells, Spell.build_from_xml(elem))
+                append_to(self.spells, Spell.build_from_xml(elem), pack)
             elif elem.tag == 'Merit':
-                append_to(self.merits, Perk.build_from_xml(elem))
+                append_to(self.merits, Perk.build_from_xml(elem), pack)
             elif elem.tag == 'Flaw':
-                append_to(self.flaws, Perk.build_from_xml(elem))
+                append_to(self.flaws, Perk.build_from_xml(elem), pack)
             elif elem.tag == 'SkillCateg':
-                append_to(self.skcategs, SkillCateg.build_from_xml(elem))
+                append_to(self.skcategs, SkillCateg.build_from_xml(elem), pack)
             elif elem.tag == 'KataDef':
-                append_to(self.katas, Kata.build_from_xml(elem))
+                append_to(self.katas, Kata.build_from_xml(elem), pack)
             elif elem.tag == 'KihoDef':
-                append_to(self.kihos, Kiho.build_from_xml(elem))
+                append_to(self.kihos, Kiho.build_from_xml(elem), pack)
             elif elem.tag == 'PerkCateg':
-                append_to(self.perktypes, PerkCateg.build_from_xml(elem))
+                append_to(self.perktypes, PerkCateg.build_from_xml(elem), pack)
             elif elem.tag == 'EffectDef':
-                append_to(self.weapon_effects, WeaponEffect.build_from_xml(elem))
+                append_to(self.weapon_effects, WeaponEffect.build_from_xml(elem), pack)
             elif elem.tag == 'Weapon':
-                append_to(self.weapons, Weapon.build_from_xml(elem))
+                append_to(self.weapons, Weapon.build_from_xml(elem), pack)
             elif elem.tag == 'Armor':
-                append_to(self.armors, Armor.build_from_xml(elem))
+                append_to(self.armors, Armor.build_from_xml(elem), pack)
             elif elem.tag == 'RingDef':
-                append_to(self.rings, GenericId.build_from_xml(elem))
+                append_to(self.rings, GenericId.build_from_xml(elem), pack)
             elif elem.tag == 'TraitDef':
-                append_to(self.traits, GenericId.build_from_xml(elem))
+                append_to(self.traits, GenericId.build_from_xml(elem), pack)
 
         del root
         del tree

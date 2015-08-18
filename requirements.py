@@ -16,11 +16,14 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from xmlutils import *
-import lxml.etree as ET
+from packitem import PackItem
 
-class Requirement(object):
+
+class Requirement(PackItem):
 
     def __init__(self):
+        super(Requirement, self).__init__()
+
         self.field = None
         self.type  = None
         self.min   = None
@@ -177,9 +180,11 @@ class Requirement(object):
             return self.match_wc_school(model, dstore)
         return True
 
-class RequirementOption(object):
+
+class RequirementOption(PackItem):
 
     def __init__(self):
+        super(RequirementOption, self).__init__()
         self.require = []
         self.type    = None
         self.text    = None

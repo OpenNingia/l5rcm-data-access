@@ -18,9 +18,14 @@
 import uuid
 import lxml.etree as ET
 
-class GenericId(object):
+from packitem import PackItem
+
+
+class GenericId(PackItem):
 
     def __init__(self):
+        super(GenericId, self).__init__()
+
         self.id     = uuid.uuid1().hex
         self.text   = None
 

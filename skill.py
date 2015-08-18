@@ -16,11 +16,14 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import uuid
-import lxml.etree as ET
+from xmlutils import *
+from packitem import PackItem
 
-class MasteryAbility(object):
+
+class MasteryAbility(PackItem):
 
     def __init__(self):
+        super(MasteryAbility, self).__init__()
         self.rank = None
         self.rule = None
         self.desc = None
@@ -36,9 +39,12 @@ class MasteryAbility(object):
     def write_into(self, elem):
         pass
 
-class SkillCateg(object):
+
+class SkillCateg(PackItem):
 
     def __init__(self):
+        super(SkillCateg, self).__init__()
+
         self.id    = uuid.uuid1().hex
         self.name  = None
 
@@ -67,9 +73,11 @@ class SkillCateg(object):
     def __hash__(self):
         return self.id.__hash__()
 
-class Skill(object):
+
+class Skill(PackItem):
 
     def __init__(self):
+        super(Skill, self).__init__()
         self.id    = uuid.uuid1().hex
 
         self.name  = None
@@ -78,6 +86,8 @@ class Skill(object):
 
         self.tags              = []
         self.mastery_abilities = []
+
+        self.desc = ""
 
     @staticmethod
     def build_from_xml(elem):
@@ -96,6 +106,9 @@ class Skill(object):
             for se in elem.find('MasteryAbilities').iter():
                 if se.tag == 'MasteryAbility':
                     f.mastery_abilities.append(MasteryAbility.build_from_xml(se))
+
+        f.desc = read_sub_element_text(elem, 'Description', "").strip()
+
         return f
 
     def write_into(self, elem):

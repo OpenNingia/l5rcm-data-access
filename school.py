@@ -17,12 +17,14 @@
 
 from requirements import read_requirements_list
 from xmlutils import *
+from packitem import PackItem
 import uuid
-import lxml.etree as ET
 
-class SchoolSkill(object):
+
+class SchoolSkill(PackItem):
 
     def __init__(self):
+        super(SchoolSkill, self).__init__()
         self.id     = uuid.uuid1().hex
         self.rank   = None
         self.emph   = None
@@ -47,9 +49,11 @@ class SchoolSkill(object):
     def __hash__(self):
         return self.id.__hash__()
 
-class SchoolSkillWildcard(object):
+
+class SchoolSkillWildcard(PackItem):
 
     def __init__(self):
+        super(SchoolSkillWildcard, self).__init__()
         self.value    = None
         self.modifier = None
 
@@ -63,9 +67,11 @@ class SchoolSkillWildcard(object):
     def write_into(self, elem):
         pass
 
-class SchoolSkillWildcardSet(object):
+
+class SchoolSkillWildcardSet(PackItem):
 
     def __init__(self):
+        super(SchoolSkillWildcardSet, self).__init__()
         self.rank      = None
         self.wildcards = []
 
@@ -82,9 +88,11 @@ class SchoolSkillWildcardSet(object):
     def write_into(self, elem):
         pass
 
-class SchoolTech(object):
+
+class SchoolTech(PackItem):
 
     def __init__(self):
+        super(SchoolTech, self).__init__()
         self.id     = uuid.uuid1().hex
         self.name   = None
         self.rank   = None
@@ -119,9 +127,11 @@ class SchoolTech(object):
     def __hash__(self):
         return self.id.__hash__()
 
-class SchoolSpell(object):
+
+class SchoolSpell(PackItem):
 
     def __init__(self):
+        super(SchoolSpell, self).__init__()
         self.id     = uuid.uuid1().hex
 
     @staticmethod
@@ -142,9 +152,11 @@ class SchoolSpell(object):
     def __hash__(self):
         return self.id.__hash__()
 
-class SchoolSpellWildcard(object):
+
+class SchoolSpellWildcard(PackItem):
 
     def __init__(self):
+        super(SchoolSpellWildcard, self).__init__()
         self.count   = None
         self.element = None
         self.tag     = None
@@ -160,9 +172,11 @@ class SchoolSpellWildcard(object):
     def write_into(self, elem):
         pass
 
-class SchoolKiho(object):
+
+class SchoolKiho(PackItem):
 
     def __init__(self):
+        super(SchoolKiho, self).__init__()
         self.count = None
         self.text  = None
 
@@ -176,9 +190,11 @@ class SchoolKiho(object):
     def write_into(self, elem):
         pass
 
-class SchoolTattoo(object):
+
+class SchoolTattoo(PackItem):
 
     def __init__(self):
+        super(SchoolTattoo, self).__init__()
         self.count   = None
         self.allowed = None
         self.text    = None
@@ -194,9 +210,11 @@ class SchoolTattoo(object):
     def write_into(self, elem):
         pass
 
-class School(object):
+
+class School(PackItem):
 
     def __init__(self):
+        super(School, self).__init__()
         self.id     = uuid.uuid1().hex
         self.name   = None
         self.clanid = None
