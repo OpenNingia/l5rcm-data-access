@@ -34,6 +34,7 @@ class Spell(object):
         self.tags     = None
         self.require  = None
         self.desc     = None
+        self.elements = []
         self.raises   = []
 
     @staticmethod
@@ -46,14 +47,22 @@ class Spell(object):
         f.range    = read_attribute(elem, 'range')
         f.duration = read_attribute(elem, 'duration')
         f.element  = read_attribute(elem, 'element')
-        f.tags     = read_tag_list(elem)
+        f.tags     = read_spell_tag_list(elem)
         f.require  = read_requirements_list(elem)
-        f.desc     = read_sub_element_text(elem, 'Description', "")
-        f.raises = []
+        f.desc     = read_sub_element_text(elem, 'Description', "").strip()
+        f.elements = []
+        f.raises   = []
+
         if elem.find('Raises') is not None:
             for se in elem.find('Raises').iter():
                 if se.tag == 'Raise':
                     f.raises.append(se.text)
+
+        # support for Multi-Element spells
+        if elem.find('MultiElement') is not None:
+            for se in elem.find('MultiElement').iter():
+                if se.tag == 'Element':
+                    f.elements.append(se.text)
         return f
 
     def write_into(self, elem):
