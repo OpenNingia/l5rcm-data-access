@@ -73,12 +73,13 @@ def append_to(collection, item, pack):
 
 
 class Data(object):
-    def __init__(self, data_dirs=None, blacklist=None):
+    def __init__(self, data_dirs=None, blacklist=None, log=True):
         if not blacklist:
             blacklist = []
         if not data_dirs:
             data_dirs = []
 
+        self.enable_log = log
         self.data_dirs = data_dirs
         self.blacklist = blacklist
 
@@ -187,7 +188,8 @@ class Data(object):
         for p in self.packs:
             self.load_data_from_pack(p)
 
-        self.__log_imported_data(data_path)
+        if self.enable_log:
+            self.__log_imported_data(data_path)
 
     def load_from_file(self, path):
         self.rebuild()
