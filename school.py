@@ -104,9 +104,11 @@ class SchoolTech(PackItem):
         f.id   = read_attribute       ( elem, 'id'       )
         f.name = read_attribute       ( elem, 'name', '' )
         f.rank = read_attribute_int   ( elem, 'rank'     )
-        f.desc = read_sub_element_text(elem, 'Description', "")
-        #if f.desc == "":
-        #    print("miss tech info: {tech_id}".format(tech_id=f.id))
+        f.desc = read_sub_element_text(elem, 'Description', "").strip()
+
+        # HACK. remove eol to allow exporters to be in charge of the text wrapping
+        f.desc = f.desc.replace('\n', '')
+
         return f
 
     def write_into(self, elem):
