@@ -32,6 +32,15 @@ import xml.etree.ElementTree
 import xml.etree.cElementTree as ET
 
 
+class DataPackLoadingError(Exception):
+    def __init__(self, file_path, err_str):
+        self.error_str = err_str
+        self.file_path = file_path
+
+    def __str__(self):
+        return "file: {file}, error: {error}".format(
+            file=self.file_path, error=self.error_str)
+
 class DataManifest(object):
     def __init__(self, d):
         self.id = d['id']
@@ -153,7 +162,9 @@ class Data(object):
                             dm.active = False
                         dm.path = path
                         self.packs.append(dm)
-                        print('DATA PACK', dm.id, dm.display_name)
+
+                        if self.enable_log:
+                            print('DATA PACK', dm.id, dm.display_name)
             except Exception as ex:
                 print(ex)
 
@@ -163,7 +174,8 @@ class Data(object):
             return
 
         if not pack.active:
-            print('{0} is blacklisted'.format(pack.id))
+            if self.enable_log:
+                print('{0} is blacklisted'.format(pack.id))
             return
 
         for path, dirs, files in os.walk(pack.path):
@@ -176,9 +188,12 @@ class Data(object):
                 try:
                     self.__load_xml(os.path.join(path, file_), pack)
                 except Exception as e:
-                    print("cannot parse file {0}".format(file_))
-                    import traceback
-                    traceback.print_exc()
+                    if self.enable_log:
+                        print("cannot parse file {0}".format(file_))
+                        import traceback
+                        traceback.print_exc()
+                    else:
+                        raise DataPackLoadingError(file_, str(e))
 
     def load_data(self, data_path):
         # iter through all the data tree and import all xml files

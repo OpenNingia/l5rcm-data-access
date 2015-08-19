@@ -105,8 +105,8 @@ class SchoolTech(PackItem):
         f.name = read_attribute       ( elem, 'name', '' )
         f.rank = read_attribute_int   ( elem, 'rank'     )
         f.desc = read_sub_element_text(elem, 'Description', "")
-        if f.desc == "":
-            print("miss tech info: {tech_id}".format(tech_id=f.id))
+        #if f.desc == "":
+        #    print("miss tech info: {tech_id}".format(tech_id=f.id))
         return f
 
     def write_into(self, elem):
@@ -288,8 +288,8 @@ class School(PackItem):
             f.money[0] = read_attribute_int(outfit_elem, 'koku')
             f.money[1] = read_attribute_int(outfit_elem, 'bu')
             f.money[2] = read_attribute_int(outfit_elem, 'zeni')
-        elif 'advanced' not in f.tags and 'alternate' not in f.tags:
-            print('missing outfit: {school_id}'.format(school_id=f.id))
+        #elif 'advanced' not in f.tags and 'alternate' not in f.tags:
+        #    print('missing outfit: {school_id}'.format(school_id=f.id))
 
         f.require = read_requirements_list(elem)
 
