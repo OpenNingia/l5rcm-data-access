@@ -18,6 +18,8 @@
 from xmlutils import *
 from packitem import PackItem
 
+import logging
+
 
 class Requirement(PackItem):
 
@@ -89,9 +91,13 @@ class Requirement(PackItem):
         return True
 
     def has_school(self, pc, school_id):
-        print('check school_id {}, min={}, max={} <= value={}'.format(
-            school_id, self.min, self.max, pc.get_school_rank(school_id)))
-        return self.in_range( pc.get_school_rank(school_id) )
+
+        log = logging.getLogger('data')
+
+        school_rank_ = pc.get_school_rank(school_id)
+        log.debug(u"check school requirement. id: %s, min rank: %d, max rank: %d. character value: %d",
+                      school_id, self.min, self.max, school_rank_)
+        return self.in_range(school_rank_)
 
     def match_wc_ring(self, pc, dstore):
         import models
@@ -164,7 +170,7 @@ class Requirement(PackItem):
                     continue
                 if self.in_range( pc.get_school_rank(k) ):
                     r = True
-                    pc.set_school_rank(k, 0)
+                    #pc.set_school_rank(k, 0)
                     break
         return r
 
