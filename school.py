@@ -213,6 +213,29 @@ class SchoolTattoo(PackItem):
         pass
 
 
+class SchoolModifier(PackItem):
+
+    def __init__(self):
+        super(SchoolModifier, self).__init__()
+        self.type = None
+        self.field = None
+        self.usage = None
+        self.value = 0
+
+    @classmethod
+    def build_from_xml(cls ,elem):
+        f = cls()
+        f.type = read_attribute(elem, 'type')
+        f.field = read_attribute(elem, 'field')
+        f.usage = read_attribute(elem, 'usage')
+        f.value = read_attribute_int(elem, 'value')
+        f.text = elem.text
+        return f
+
+    def write_into(self, elem):
+        pass
+
+
 class School(PackItem):
 
     def __init__(self):
@@ -237,6 +260,8 @@ class School(PackItem):
         self.outfit     = []
         self.money      = [0]*3 # koku, bu, zeni
         self.require    = []
+
+        self.modifiers  = []
 
     @staticmethod
     def build_from_xml(elem):
@@ -302,6 +327,14 @@ class School(PackItem):
             f.kihos = SchoolKiho.build_from_xml( elem.find('Kihos') )
         if elem.find('Tattoos') is not None:
             f.tattoos = SchoolTattoo.build_from_xml( elem.find('Tattoos') )
+
+        # school modifiers
+        f.modifiers = []
+        modifiers = elem.find('Modifiers')
+        if modifiers:
+            for i_elem in modifiers.iter():
+                if i_elem.tag == 'Modifier':
+                    f.modifiers.append(SchoolModifier.build_from_xml(i_elem))
 
         return f
 
