@@ -58,25 +58,27 @@ class Requirement(PackItem):
 
     def match(self, pc, dstore):
 
-        if self.field.startswith('*'):
-            return self.match_wildcard(pc, dstore)
-        if self.field == 'honor':
-            return self.in_range( pc.get_honor() )
-        if self.field == 'status':
-            return self.in_range( pc.get_status() )
-        if self.field == 'glory':
-            return self.in_range( pc.get_glory() )
+        if self.field:
+            if self.field.startswith('*'):
+                return self.match_wildcard(pc, dstore)
+            if self.field == 'honor':
+                return self.in_range(pc.get_honor())
+            if self.field == 'status':
+                return self.in_range(pc.get_status())
+            if self.field == 'glory':
+                return self.in_range(pc.get_glory())
+
         if self.type == 'ring':
-            return self.in_range( pc.get_ring_rank(self.field) )
+            return self.in_range(pc.get_ring_rank(self.field))
         if self.type == 'trait':
-            return self.in_range( pc.get_trait_rank(self.field) )
+            return self.in_range(pc.get_trait_rank(self.field))
         if self.type == 'skill':
             skill_id = self.field
             if not skill_id: return True
             if self.trg and self.trg not in pc.get_skill_emphases(skill_id):
-                return False # missing emphases
+                return False  # missing emphases
             if (skill_id not in pc.get_skills() or
-                not self.in_range( pc.get_skill_rank(skill_id) )):
+                    not self.in_range(pc.get_skill_rank(skill_id))):
                 return False
             pc.set_skill_rank(skill_id, 0)
             return True
@@ -87,7 +89,7 @@ class Requirement(PackItem):
         if self.type == 'school':
             return self.has_school(pc, self.field)
         if self.type == 'rank':
-            return self.in_range( pc.get_insight_rank() )
+            return self.in_range(pc.get_insight_rank())
         return True
 
     def has_school(self, pc, school_id):
