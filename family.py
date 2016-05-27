@@ -18,26 +18,36 @@
 import uuid
 import lxml.etree as ET
 
-from .packitem import PackItem
+from packitem import PackItem
 
 
-class Clan(PackItem):
+class Family(PackItem):
 
     def __init__(self):
-        super(Clan, self).__init__()
+        super(Family, self).__init__()
 
-        self.id   = uuid.uuid1().hex
-        self.name = None
+        self.id     = uuid.uuid1().hex
+        self.name   = None
+        self.clanid = None
+        self.trait  = None
 
     @staticmethod
     def build_from_xml(elem):
-        c = Clan()
-        c.name = elem.attrib['name']
-        c.id   = elem.attrib['id']
-        return c
+        f = Family()
+        f.name   = elem.attrib['name']
+        f.id     = elem.attrib['id']
+        f.clanid = elem.attrib['clanid']
+        f.trait  = elem.find('Trait').text
+        return f
 
     def write_into(self, elem):
-        ec = ET.SubElement(elem, 'Clan', {'name': self.name, 'id': self.id})
+        ec = ET.SubElement(elem, 'Family',
+            { 'name'  : self.name,
+              'id'    : self.id,
+              'clanid': self.clanid
+            })
+
+        ET.SubElement(ec, 'Trait').text = self.trait
 
     def __str__(self):
         return self.name or self.id

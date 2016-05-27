@@ -15,11 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from .xmlutils import *
+from xmlutils import *
 import uuid
 import lxml.etree as ET
 
-from .packitem import PackItem
+from packitem import PackItem
 
 
 class PerkCateg(PackItem):

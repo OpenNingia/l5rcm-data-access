@@ -18,42 +18,33 @@
 import uuid
 import lxml.etree as ET
 
-from .packitem import PackItem
+from packitem import PackItem
 
 
-class Family(PackItem):
+class GenericId(PackItem):
 
     def __init__(self):
-        super(Family, self).__init__()
+        super(GenericId, self).__init__()
 
         self.id     = uuid.uuid1().hex
-        self.name   = None
-        self.clanid = None
-        self.trait  = None
+        self.text   = None
 
     @staticmethod
     def build_from_xml(elem):
-        f = Family()
-        f.name   = elem.attrib['name']
-        f.id     = elem.attrib['id']
-        f.clanid = elem.attrib['clanid']
-        f.trait  = elem.find('Trait').text
+        f = GenericId()
+        f.id = elem.attrib['id']
+        f.text = elem.text
         return f
 
-    def write_into(self, elem):
-        ec = ET.SubElement(elem, 'Family',
-            { 'name'  : self.name,
-              'id'    : self.id,
-              'clanid': self.clanid
-            })
-
-        ET.SubElement(ec, 'Trait').text = self.trait
+    def write_into(self, name, elem):
+        ec = ET.SubElement(elem, name,
+            { 'id'    : self.id } ).text = self.text
 
     def __str__(self):
-        return self.name or self.id
+        return self.text
 
     def __unicode__(self):
-        return self.name or self.id
+        return self.text
 
     def __eq__(self, obj):
         return obj and obj.id == self.id

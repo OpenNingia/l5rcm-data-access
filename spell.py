@@ -15,10 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+from requirements import read_requirements_list
+from xmlutils import *
 import uuid
-from .requirements import read_requirements_list
-from .xmlutils import *
-from .packitem import PackItem
+from packitem import PackItem
 
 
 class Spell(PackItem):

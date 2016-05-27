@@ -15,9 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from .requirements import read_requirements_list
-from .packitem import PackItem
-from .xmlutils import *
+from requirements import read_requirements_list
+from packitem import PackItem
+from xmlutils import *
 import uuid
 
 
