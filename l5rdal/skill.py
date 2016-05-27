@@ -16,8 +16,8 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import uuid
-from xmlutils import *
-from packitem import PackItem
+from .xmlutils import *
+from .packitem import PackItem
 
 
 class MasteryAbility(PackItem):
