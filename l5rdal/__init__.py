@@ -15,20 +15,20 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from clan import *
-from family import *
-from school import *
-from skill import *
-from spell import *
-from perk import *
-from powers import *
-from weapon import *
-from generic import *
-from requirements import *
+from .clan import *
+from .family import *
+from .school import *
+from .skill import *
+from .spell import *
+from .perk import *
+from .powers import *
+from .weapon import *
+from .generic import *
+from .requirements import *
 
 import os
 import json
-import logging
+import xml.etree.ElementTree
 import xml.etree.cElementTree as ET
 
 
@@ -40,7 +40,6 @@ class DataPackLoadingError(Exception):
     def __str__(self):
         return "file: {file}, error: {error}".format(
             file=self.file_path, error=self.error_str)
-
 
 class DataManifest(object):
     def __init__(self, d):
@@ -83,13 +82,13 @@ def append_to(collection, item, pack):
 
 
 class Data(object):
-    def __init__(self, data_dirs=None, blacklist=None, exception=False):
+    def __init__(self, data_dirs=None, blacklist=None, log=True):
         if not blacklist:
             blacklist = []
         if not data_dirs:
             data_dirs = []
 
-        self.exception_on_error = exception
+        self.enable_log = log
         self.data_dirs = data_dirs
         self.blacklist = blacklist
 
@@ -148,8 +147,6 @@ class Data(object):
         return self.packs
 
     def scan_data_folder_for_packs(self, data_path):
-        log = logging.getLogger('data')
-
         for path, dirs, files in os.walk(data_path):
             dirn = os.path.basename(path)
 
@@ -165,19 +162,20 @@ class Data(object):
                             dm.active = False
                         dm.path = path
                         self.packs.append(dm)
-                        log.info(u"found datapack: %s, id: %s", dm.display_name, dm.id)
+
+                        if self.enable_log:
+                            print('DATA PACK', dm.id, dm.display_name)
             except Exception as ex:
-                log.exception(ex)
+                print(ex)
 
     def load_data_from_pack(self, pack):
 
         if not pack:
             return
 
-        log = logging.getLogger('data')
-
         if not pack.active:
-            log.warning(u"package %s is blacklisted and will not be loaded", pack.id)
+            if self.enable_log:
+                print('{0} is blacklisted'.format(pack.id))
             return
 
         for path, dirs, files in os.walk(pack.path):
@@ -188,12 +186,13 @@ class Data(object):
                 if not file_.endswith('.xml'):
                     continue
                 try:
-                    self.__load_xml(os.path.join(path, file_), pack)
+                    self.from_file(os.path.join(path, file_), pack)
                 except Exception as e:
-                    log.error(u"could not parse file: %s", file_)
-                    log.exception(e)
-
-                    if self.exception_on_error:
+                    if self.enable_log:
+                        print("cannot parse file {0}".format(file_))
+                        import traceback
+                        traceback.print_exc()
+                    else:
                         raise DataPackLoadingError(file_, str(e))
 
     def load_data(self, data_path):
@@ -204,19 +203,17 @@ class Data(object):
         for p in self.packs:
             self.load_data_from_pack(p)
 
-        self.__log_imported_data(data_path)
+        if self.enable_log:
+            self.__log_imported_data(data_path)
 
-    def load_from_file(self, path):
-        self.rebuild()
-        return self.__load_xml(path)
+    def from_file(self, path, pack=None):
+        return self.__load_xml(ET.parse(path).getroot(), pack)
 
-    def __load_xml(self, xml_file, pack=None):
+    def from_string(self, xml, pack=None):
+        return self.__load_xml(ET.fromstring(xml), pack)
 
-        log = logging.getLogger('data')
-        log.debug(u"processing file: %s", xml_file)
+    def __load_xml(self, root, pack=None):
 
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
         if root is None or root.tag != 'L5RCM':
             raise Exception("Not an L5RCM data file")
         for elem in list(root):
@@ -253,13 +250,7 @@ class Data(object):
             elif elem.tag == 'TraitDef':
                 append_to(self.traits, GenericId.build_from_xml(elem), pack)
 
-        del root
-        del tree
-
     def __log_imported_data(self, source):
-
-        log = logging.getLogger('data')
-
         map_ = {'clans': self.clans,
                 'families': self.families,
                 'schools': self.schools,
@@ -275,8 +266,9 @@ class Data(object):
                 'perktypes': self.perktypes,
                 'weapon_effects': self.weapon_effects}
 
+        print('IMPORTED DATA', source)
         for k in map_:
-            log.debug(u"imported %d %s", len(map_[k]), k)
+            print("imported {0} {1}".format(len(map_[k]), k))
 
 
 class DataFile(Data):
@@ -285,7 +277,8 @@ class DataFile(Data):
 
         self.path = None
         if fp is not None:
-            self.load_from_file(fp)
+            self.rebuild()
+            self.from_file(fp)
 
     def save(self, new_path=None):
 

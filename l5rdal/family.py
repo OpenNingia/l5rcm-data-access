@@ -18,7 +18,7 @@
 import uuid
 import lxml.etree as ET
 
-from packitem import PackItem
+from .packitem import PackItem
 
 
 class Family(PackItem):

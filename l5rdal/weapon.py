@@ -16,7 +16,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import uuid
-from packitem import PackItem
+from .packitem import PackItem
 
 
 class WeaponEffect(PackItem):

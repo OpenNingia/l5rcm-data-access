@@ -15,11 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from requirements import read_requirements_list
-from xmlutils import *
-from packitem import PackItem
 import uuid
-
+from .xmlutils import *
+from .packitem import PackItem
+from .requirements import read_requirements_list
 
 class SchoolSkill(PackItem):
 
@@ -213,24 +212,6 @@ class SchoolTattoo(PackItem):
         pass
 
 
-class SchoolPerk(PackItem):
-
-    def __init__(self):
-        super(SchoolPerk, self).__init__()
-        self.id = None
-        self.rank = 0
-
-    @staticmethod
-    def build_from_xml(elem):
-        f = SchoolPerk()
-        f.rank = read_attribute_int (elem, 'rank')
-        f.id = read_attribute(elem, 'id')
-        return f
-
-    def write_into(self, elem):
-        pass
-
-
 class School(PackItem):
 
     def __init__(self):
@@ -255,7 +236,6 @@ class School(PackItem):
         self.outfit     = []
         self.money      = [0]*3 # koku, bu, zeni
         self.require    = []
-        self.perks      = []
 
     @staticmethod
     def build_from_xml(elem):
@@ -321,13 +301,6 @@ class School(PackItem):
             f.kihos = SchoolKiho.build_from_xml( elem.find('Kihos') )
         if elem.find('Tattoos') is not None:
             f.tattoos = SchoolTattoo.build_from_xml( elem.find('Tattoos') )
-
-        # starting Merit and Flaws
-        f.perks = []
-        if elem.find('Perks') is not None:
-            for se in elem.find('Perks').iter():
-                if se.tag == 'Perk':
-                    f.perks.append(SchoolPerk.build_from_xml(se))
 
         return f
 
