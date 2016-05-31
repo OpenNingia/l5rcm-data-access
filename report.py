@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import dal
+import l5rdal
 import os
 from collections import OrderedDict
 
@@ -102,12 +102,11 @@ class ContentToMarkDown(object):
             self.build_kiho_list    ()
 
     def md_sethext( self, text, char ):
-
-        self.fp.write(u"\n{0}\n".format(text).encode('UTF-8'))
-        self.fp.write(char*len(text) + u"\n")
+        self.fp.write( u"\n" + text + u"\n" )
+        self.fp.write( char*len(text) + u"\n" )
 
     def md_atx( self, text, n ):
-        self.fp.write(u"\n{} {}\n".format(u"#"*n, text).encode('UTF-8'))
+        self.fp.write( u"\n{} {}\n".format( u"#"*n, text ) )
 
     def md_h1( self, text ):
         self.md_sethext( text, u'=' )
@@ -128,9 +127,7 @@ class ContentToMarkDown(object):
         self.md_atx( text, 6 )
 
     def md_bullet( self, text ):
-        text_ = u"* {}\n".format(text)
-
-        self.fp.write(text_.encode('UTF-8'))
+        self.fp.write( u"* " + text + u"\n" )
 
     def fmt_anchor( self, text, anchor ):
         return "[{}](#{})".format(text, anchor)
@@ -145,6 +142,7 @@ class ContentToMarkDown(object):
         for c in sorted( self.data.clans, key = lambda x: x.name ):
             self.md_bullet( c.name )
 
+        #self.fp.write( u"\n" )
 
     def build_family_list(self):
 
@@ -161,9 +159,11 @@ class ContentToMarkDown(object):
 
             for f in sorted(clan_families):
                 try:
-                    self.md_bullet(f)
+                    self.md_bullet( f.decode('utf-8') )
                 except:
                     print('cannot write', f)
+
+            #self.fp.write( u"\n" )
 
 
     def __build_school_list(self, caption, slist):
@@ -182,10 +182,11 @@ class ContentToMarkDown(object):
 
             for f in sorted(clan_schools):
                 try:
-                    self.md_bullet(f)
+                    self.md_bullet( f.decode('utf-8') )
                 except:
                     print('cannot write', f)
 
+            #self.fp.write( "\n" )
 
     def build_school_list(self):
 
@@ -216,9 +217,9 @@ class ContentToMarkDown(object):
 
             for f in sorted(skills):
                 try:
-                    self.md_bullet(f)
-                except Exception as e:
-                    print('cannot write', f, e)
+                    self.md_bullet( f.decode('utf-8') )
+                except:
+                    print('cannot write', f)
 
     def build_spell_list(self):
 
@@ -240,7 +241,7 @@ class ContentToMarkDown(object):
 
                     for f in sorted(spells_rank):
                         try:
-                            self.md_bullet(f)
+                            self.md_bullet( f.decode('utf-8') )
                         except:
                             print('cannot write', f)
 
@@ -258,7 +259,7 @@ class ContentToMarkDown(object):
 
             for f in sorted(perks):
                 try:
-                    self.md_bullet(f)
+                    self.md_bullet( f.decode('utf-8') )
                 except:
                     print('cannot write', f)
 
@@ -289,7 +290,7 @@ class ContentToMarkDown(object):
 
                     for f in sorted(powers_rank):
                         try:
-                            self.md_bullet(f)
+                            self.md_bullet( f.decode('utf-8') )
                         except:
                             print('cannot write', f)
 

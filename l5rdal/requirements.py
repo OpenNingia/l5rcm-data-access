@@ -15,11 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from xmlutils import *
-from packitem import PackItem
-
+from .xmlutils import *
+from .packitem import PackItem
 import logging
-
 
 class Requirement(PackItem):
 
@@ -102,10 +100,10 @@ class Requirement(PackItem):
         return self.in_range(school_rank_)
 
     def match_wc_ring(self, pc, dstore):
-        import models
+        import l5r.models
         r = False
         if self.field == '*any': # any ring
-            for i in xrange(0, 5):
+            for i in range(0, 5):
                 ring_id = models.ring_name_from_id(i)
                 if self.in_range( pc.get_ring_rank(ring_id) ):
                     pc.set_ring_rank(ring_id, 0)
@@ -114,10 +112,10 @@ class Requirement(PackItem):
         return r
 
     def match_wc_trait(self, pc, dstore):
-        import models
+        import l5r.models
         r = False
         if self.field == '*any': # any trait
-            for i in xrange(0, 8):
+            for i in range(0, 8):
                 trait_id = models.attrib_name_from_id(i)
                 if self.in_range( pc.get_trait_rank(trait_id) ):
                     pc.set_trait_rank(trait_id, 0)
@@ -133,8 +131,8 @@ class Requirement(PackItem):
                     r = True
                     pc.set_skill_rank(k, 0)
         else:
-            import dal
-            import dal.query
+            import l5rdal as dal
+            import l5rdal.query
 
             tag = self.field[1:]
             for k in pc.get_skills():
@@ -158,8 +156,8 @@ class Requirement(PackItem):
                     r = True
                     pc.set_school_rank(k, 0)
         else:
-            import dal
-            import dal.query
+            import l5rdal as dal
+            import l5rdal.query
 
             tag = self.field[1:]
             for k in pc.get_schools():
