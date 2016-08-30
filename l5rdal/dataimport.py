@@ -77,10 +77,10 @@ class DataPack(object):
             try:
                 # search manifest
                 manifest_info = dz.getinfo('manifest')
-                manifest_fp   = dz.open(manifest_info)
-                manifest_js   = json.load(manifest_fp)
+                with dz.open(manifest_info) as manifest_fp: 
+                    manifest_js = json.loads(manifest_fp.read().decode('utf-8'))
 
-                self.id       = manifest_js['id']
+                self.id = manifest_js['id']
                 if 'display_name' in manifest_js:
                     self.dsp_name = manifest_js['display_name']
                 if 'language' in manifest_js:
@@ -97,7 +97,7 @@ class DataPack(object):
                     self.min_cm_ver = manifest_js['min-cm-version']
             except Exception as e:
                 print('manifest not found!')
-                print(e.message)
+                print(str(e))
                 raise ManifestNotFound('Not a valid Data pack file.')
 
     def export_to(self, data_path):
