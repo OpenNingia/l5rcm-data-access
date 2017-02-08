@@ -19,6 +19,7 @@ import os
 import json
 import zipfile
 import shutil
+import codecs
 
 CM_VERSION = None
 
@@ -78,7 +79,8 @@ class DataPack(object):
                 # search manifest
                 manifest_info = dz.getinfo('manifest')
                 manifest_fp   = dz.open(manifest_info)
-                manifest_js   = json.load(manifest_fp)
+                reader = codecs.getreader("utf-8")
+                manifest_js   = json.load(reader(manifest_fp))
 
                 self.id       = manifest_js['id']
                 if 'display_name' in manifest_js:
