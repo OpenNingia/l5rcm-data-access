@@ -15,20 +15,21 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from clan import *
-from family import *
-from school import *
-from skill import *
-from spell import *
-from perk import *
-from powers import *
-from weapon import *
-from generic import *
-from requirements import *
+from .clan import *
+from .family import *
+from .school import *
+from .skill import *
+from .spell import *
+from .perk import *
+from .powers import *
+from .weapon import *
+from .generic import *
+from .requirements import *
 
 import os
 import json
 import logging
+import xml.etree.ElementTree
 import xml.etree.cElementTree as ET
 
 
@@ -40,7 +41,6 @@ class DataPackLoadingError(Exception):
     def __str__(self):
         return "file: {file}, error: {error}".format(
             file=self.file_path, error=self.error_str)
-
 
 class DataManifest(object):
     def __init__(self, d):
@@ -188,7 +188,7 @@ class Data(object):
                 if not file_.endswith('.xml'):
                     continue
                 try:
-                    self.__load_xml(os.path.join(path, file_), pack)
+                    self.from_file(os.path.join(path, file_), pack)
                 except Exception as e:
                     log.error(u"could not parse file: %s", file_)
                     log.exception(e)
@@ -206,17 +206,16 @@ class Data(object):
 
         self.__log_imported_data(data_path)
 
-    def load_from_file(self, path):
-        self.rebuild()
-        return self.__load_xml(path)
-
-    def __load_xml(self, xml_file, pack=None):
-
+    def from_file(self, path, pack=None):
         log = logging.getLogger('data')
-        log.debug(u"processing file: %s", xml_file)
+        log.debug(u"processing file: %s", path)
+        return self.__load_xml(ET.parse(path).getroot(), pack)
 
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
+    def from_string(self, xml, pack=None):
+        return self.__load_xml(ET.fromstring(xml), pack)
+
+    def __load_xml(self, root, pack=None):
+
         if root is None or root.tag != 'L5RCM':
             raise Exception("Not an L5RCM data file")
         for elem in list(root):
@@ -253,9 +252,6 @@ class Data(object):
             elif elem.tag == 'TraitDef':
                 append_to(self.traits, GenericId.build_from_xml(elem), pack)
 
-        del root
-        del tree
-
     def __log_imported_data(self, source):
 
         log = logging.getLogger('data')
@@ -285,7 +281,8 @@ class DataFile(Data):
 
         self.path = None
         if fp is not None:
-            self.load_from_file(fp)
+            self.rebuild()
+            self.from_file(fp)
 
     def save(self, new_path=None):
 

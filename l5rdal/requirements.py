@@ -15,11 +15,68 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from xmlutils import *
-from packitem import PackItem
-
+from .xmlutils import *
+from .packitem import PackItem
 import logging
 
+
+class RINGS:
+    EARTH = 0
+    AIR = 1
+    WATER = 2
+    FIRE = 3
+    VOID = 4
+
+    _names = dict(earth=0, air=1, water=2, fire=3, void=4)
+    _ids = ['earth', 'air', 'water', 'fire', 'void']
+
+
+def ring_from_name(name):
+    if name in RINGS._names:
+        return RINGS._names[name]
+    return -1
+
+
+def ring_name_from_id(ring_id):
+    if 0 <= ring_id < len(RINGS._ids):
+        return RINGS._ids[ring_id]
+
+
+class ATTRIBS:
+    # earth ring
+    STAMINA = 0
+    WILLPOWER = 1
+
+    # air ring
+    REFLEXES = 2
+    AWARENESS = 3
+
+    # water ring
+    STRENGTH = 4
+    PERCEPTION = 5
+
+    # fire ring
+    AGILITY = 6
+    INTELLIGENCE = 7
+
+    _names = dict(stamina=0, willpower=1, reflexes=2, awareness=3,
+                  strength=4, perception=5, agility=6, intelligence=7)
+    _ids = ['stamina', 'willpower', 'reflexes', 'awareness', 'strength',
+            'perception', 'agility', 'intelligence']
+
+
+def attrib_from_name(name):
+    if name in ATTRIBS._names:
+        return ATTRIBS._names[name]
+    return -1
+
+
+def attrib_name_from_id(attrib_id):
+    if 0 <= attrib_id < len(ATTRIBS._ids):
+        return ATTRIBS._ids[attrib_id]
+    else:
+        print("unknown trait_id: {0}".format(attrib_id))
+        return None
 
 class Requirement(PackItem):
 
@@ -102,11 +159,10 @@ class Requirement(PackItem):
         return self.in_range(school_rank_)
 
     def match_wc_ring(self, pc, dstore):
-        import models
         r = False
         if self.field == '*any': # any ring
-            for i in xrange(0, 5):
-                ring_id = models.ring_name_from_id(i)
+            for i in range(0, 5):
+                ring_id = ring_name_from_id(i)
                 if self.in_range( pc.get_ring_rank(ring_id) ):
                     pc.set_ring_rank(ring_id, 0)
                     r = True
@@ -114,11 +170,10 @@ class Requirement(PackItem):
         return r
 
     def match_wc_trait(self, pc, dstore):
-        import models
         r = False
         if self.field == '*any': # any trait
-            for i in xrange(0, 8):
-                trait_id = models.attrib_name_from_id(i)
+            for i in range(0, 8):
+                trait_id = attrib_name_from_id(i)
                 if self.in_range( pc.get_trait_rank(trait_id) ):
                     pc.set_trait_rank(trait_id, 0)
                     r = True
@@ -133,8 +188,8 @@ class Requirement(PackItem):
                     r = True
                     pc.set_skill_rank(k, 0)
         else:
-            import dal
-            import dal.query
+            import l5rdal as dal
+            import l5rdal.query
 
             tag = self.field[1:]
             for k in pc.get_skills():
@@ -158,8 +213,8 @@ class Requirement(PackItem):
                     r = True
                     pc.set_school_rank(k, 0)
         else:
-            import dal
-            import dal.query
+            import l5rdal as dal
+            import l5rdal.query
 
             tag = self.field[1:]
             for k in pc.get_schools():
