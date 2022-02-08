@@ -71,9 +71,10 @@ class DataManifest(object):
             self.min_cm_ver = d['min-cm-version']
 
 
-def append_to(collection, item, pack):
+def append_to(collection, item, pack, elem):
 
     item.source_pack = pack
+    item.book_page = elem.attrib['page'] if 'page' in elem.attrib else None
 
     if item in collection:
         i = collection.index(item)
@@ -220,37 +221,37 @@ class Data(object):
             raise Exception("Not an L5RCM data file")
         for elem in list(root):
             if elem.tag == 'Clan':
-                append_to(self.clans, Clan.build_from_xml(elem), pack)
+                append_to(self.clans, Clan.build_from_xml(elem), pack, elem)
             elif elem.tag == 'Family':
-                append_to(self.families, Family.build_from_xml(elem), pack)
+                append_to(self.families, Family.build_from_xml(elem), pack, elem)
             elif elem.tag == 'School':
-                append_to(self.schools, School.build_from_xml(elem), pack)
+                append_to(self.schools, School.build_from_xml(elem), pack, elem)
             elif elem.tag == 'SkillDef':
-                append_to(self.skills, Skill.build_from_xml(elem), pack)
+                append_to(self.skills, Skill.build_from_xml(elem), pack, elem)
             elif elem.tag == 'SpellDef':
-                append_to(self.spells, Spell.build_from_xml(elem), pack)
+                append_to(self.spells, Spell.build_from_xml(elem), pack, elem)
             elif elem.tag == 'Merit':
-                append_to(self.merits, Perk.build_from_xml(elem), pack)
+                append_to(self.merits, Perk.build_from_xml(elem), pack, elem)
             elif elem.tag == 'Flaw':
-                append_to(self.flaws, Perk.build_from_xml(elem), pack)
+                append_to(self.flaws, Perk.build_from_xml(elem), pack, elem)
             elif elem.tag == 'SkillCateg':
-                append_to(self.skcategs, SkillCateg.build_from_xml(elem), pack)
+                append_to(self.skcategs, SkillCateg.build_from_xml(elem), pack, elem)
             elif elem.tag == 'KataDef':
-                append_to(self.katas, Kata.build_from_xml(elem), pack)
+                append_to(self.katas, Kata.build_from_xml(elem), pack, elem)
             elif elem.tag == 'KihoDef':
-                append_to(self.kihos, Kiho.build_from_xml(elem), pack)
+                append_to(self.kihos, Kiho.build_from_xml(elem), pack, elem)
             elif elem.tag == 'PerkCateg':
-                append_to(self.perktypes, PerkCateg.build_from_xml(elem), pack)
+                append_to(self.perktypes, PerkCateg.build_from_xml(elem), pack, elem)
             elif elem.tag == 'EffectDef':
-                append_to(self.weapon_effects, WeaponEffect.build_from_xml(elem), pack)
+                append_to(self.weapon_effects, WeaponEffect.build_from_xml(elem), pack, elem)
             elif elem.tag == 'Weapon':
-                append_to(self.weapons, Weapon.build_from_xml(elem), pack)
+                append_to(self.weapons, Weapon.build_from_xml(elem), pack, elem)
             elif elem.tag == 'Armor':
-                append_to(self.armors, Armor.build_from_xml(elem), pack)
+                append_to(self.armors, Armor.build_from_xml(elem), pack, elem)
             elif elem.tag == 'RingDef':
-                append_to(self.rings, GenericId.build_from_xml(elem), pack)
+                append_to(self.rings, GenericId.build_from_xml(elem), pack, elem)
             elif elem.tag == 'TraitDef':
-                append_to(self.traits, GenericId.build_from_xml(elem), pack)
+                append_to(self.traits, GenericId.build_from_xml(elem), pack, elem)
 
     def __log_imported_data(self, source):
 

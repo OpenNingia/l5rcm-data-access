@@ -19,7 +19,12 @@
 class PackItem(object):
     def __init__(self):
         self.source_pack = None
+        self.book_page = None
 
     @property
     def pack(self):
         return self.source_pack
+
+    @property
+    def page(self):
+        return self.book_page
