@@ -36,6 +36,18 @@ class WeaponEffect(PackItem):
     def write_into(self, elem):
         pass
 
+    # Identity by id so Data.append_to() overrides an existing effect
+    # instead of appending a duplicate when a pack is revisited (mirrors
+    # Skill/SkillCateg). Without this the load is not idempotent.
+    def __eq__(self, obj):
+        return obj is not None and getattr(obj, 'id', None) == self.id
+
+    def __ne__(self, obj):
+        return not self.__eq__(obj)
+
+    def __hash__(self):
+        return hash(self.id)
+
 
 class Armor(PackItem):
 
@@ -68,6 +80,18 @@ class Armor(PackItem):
 
     def __unicode__(self):
         return self.name
+
+    # Identity by name (the key get_armor() resolves by) so the load is
+    # idempotent: revisiting a pack overrides the armor rather than
+    # appending a duplicate. Mirrors Skill/SkillCateg.
+    def __eq__(self, obj):
+        return obj is not None and getattr(obj, 'name', None) == self.name
+
+    def __ne__(self, obj):
+        return not self.__eq__(obj)
+
+    def __hash__(self):
+        return hash(self.name)
 
 
 class Weapon(PackItem):
@@ -117,3 +141,17 @@ class Weapon(PackItem):
 
     def __unicode__(self):
         return self.name
+
+    # Identity by name (the key get_weapon() resolves by) so the load is
+    # idempotent: revisiting a pack overrides the weapon rather than
+    # appending a duplicate. This was the cause of weapons listing twice
+    # (Katana, Kusarigama, every arrow…) -- Weapon, alone among the
+    # catalogue item types, lacked the __eq__ that append_to() relies on.
+    def __eq__(self, obj):
+        return obj is not None and getattr(obj, 'name', None) == self.name
+
+    def __ne__(self, obj):
+        return not self.__eq__(obj)
+
+    def __hash__(self):
+        return hash(self.name)
