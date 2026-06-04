@@ -137,3 +137,18 @@ def get_trait(storage, iid):
         return [x for x in storage.traits if x.id == iid][0]
     except:
         return None
+
+def get_modifiers_for(storage, slug, kind=None):
+    """Return every ModifierDef attached to the record `slug`.
+
+    Several definitions may share a target (they stack), so this always
+    returns a list (possibly empty). Pass `kind` to disambiguate when the same
+    slug exists across record types.
+    """
+    try:
+        sets = [x for x in storage.modifier_sets if x.target == slug]
+        if kind is not None:
+            sets = [x for x in sets if x.kind == kind]
+        return sets
+    except:
+        return []

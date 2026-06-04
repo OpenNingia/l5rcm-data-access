@@ -25,6 +25,7 @@ from .powers import *
 from .weapon import *
 from .generic import *
 from .requirements import *
+from .modifier import *
 
 import os
 import json
@@ -111,6 +112,7 @@ class Data(object):
         self.weapon_effects = []
         self.rings = []
         self.traits = []
+        self.modifier_sets = []
 
         self.rebuild(data_dirs, blacklist)
 
@@ -140,6 +142,7 @@ class Data(object):
         self.weapon_effects = []
         self.rings = []
         self.traits = []
+        self.modifier_sets = []
 
         for d in data_dirs:
             if d and os.path.exists(d):
@@ -252,6 +255,8 @@ class Data(object):
                 append_to(self.rings, GenericId.build_from_xml(elem), pack, elem)
             elif elem.tag == 'TraitDef':
                 append_to(self.traits, GenericId.build_from_xml(elem), pack, elem)
+            elif elem.tag == 'ModifierDef':
+                append_to(self.modifier_sets, ModifierDef.build_from_xml(elem), pack, elem)
 
     def __log_imported_data(self, source):
 
@@ -270,7 +275,8 @@ class Data(object):
                 'armors': self.armors,
                 'skcategs': self.skcategs,
                 'perktypes': self.perktypes,
-                'weapon_effects': self.weapon_effects}
+                'weapon_effects': self.weapon_effects,
+                'modifier_sets': self.modifier_sets}
 
         for k in map_:
             log.debug(u"imported %d %s", len(map_[k]), k)
