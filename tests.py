@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Daniele Simonetti'
 
+import os
+import shutil
+import tempfile
 import unittest
 import l5rdal as dal
 import l5rdal.query
@@ -166,6 +169,29 @@ class TestDal(unittest.TestCase):
         md = self.data.modifier_sets[0]
         self.assertEqual(5, md.rank)
         self.assertEqual('mastery', md.kind)
+
+    def test_packs_loaded_once_across_data_dirs(self):
+        # Regression: load_data() accumulates packs in self.packs, so iterating
+        # the whole list on each data dir re-parsed packs found earlier. Records
+        # with an identity were silently deduped, but ModifierDef (no __eq__,
+        # stacks on purpose) got duplicated. A pack in the first dir must be
+        # loaded exactly once even when a second data dir is scanned afterwards.
+        root_a = tempfile.mkdtemp(prefix="dal_a_")
+        root_b = tempfile.mkdtemp(prefix="dal_b_")
+        try:
+            pack = os.path.join(root_a, "p1")
+            os.makedirs(pack)
+            with open(os.path.join(pack, "manifest"), "w", encoding="utf-8") as fp:
+                fp.write('{"id": "p1", "version": "1.0", "display_name": "P1"}')
+            with open(os.path.join(pack, "mods.xml"), "w", encoding="utf-8") as fp:
+                fp.write("<L5RCM><ModifierDef target='x' kind='tech'>"
+                         "<Mod affects='armor_tn' value='1'/></ModifierDef></L5RCM>")
+            data = dal.Data([root_a, root_b], [])
+            self.assertEqual(1, len(data.modifier_sets))
+            self.assertEqual(1, len(dal.query.get_modifiers_for(data, 'x')))
+        finally:
+            shutil.rmtree(root_a, ignore_errors=True)
+            shutil.rmtree(root_b, ignore_errors=True)
 
     def test_modifier_query_kind_filter(self):
         xml_ = """<L5RCM>

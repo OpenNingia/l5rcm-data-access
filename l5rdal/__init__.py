@@ -154,6 +154,7 @@ class Data(object):
     def scan_data_folder_for_packs(self, data_path):
         log = logging.getLogger('data')
 
+        found = []
         for path, dirs, files in os.walk(data_path):
             dirn = os.path.basename(path)
 
@@ -169,9 +170,11 @@ class Data(object):
                             dm.active = False
                         dm.path = path
                         self.packs.append(dm)
+                        found.append(dm)
                         log.info(u"found datapack: %s, id: %s", dm.display_name, dm.id)
             except Exception as ex:
                 log.exception(ex)
+        return found
 
     def load_data_from_pack(self, pack):
 
@@ -201,11 +204,17 @@ class Data(object):
                         raise DataPackLoadingError(file_, str(e))
 
     def load_data(self, data_path):
-        # iter through all the data tree and import all xml files
+        # iter through all the data tree and import all xml files.
+        # Only load the packs discovered in THIS scan: self.packs accumulates
+        # across calls (one per data dir), so iterating it whole would re-parse
+        # packs found earlier. That re-parse was historically masked by the
+        # per-record dedup in append_to (records key by id/name), but records
+        # without an identity (e.g. ModifierDef, which intentionally stacks)
+        # would be duplicated. Loading each pack exactly once is also faster.
 
-        self.scan_data_folder_for_packs(data_path)
+        new_packs = self.scan_data_folder_for_packs(data_path)
 
-        for p in self.packs:
+        for p in new_packs:
             self.load_data_from_pack(p)
 
         self.__log_imported_data(data_path)
