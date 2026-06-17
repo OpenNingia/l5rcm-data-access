@@ -17,7 +17,7 @@
 
 from .xmlutils import *
 import uuid
-import lxml.etree as ET
+import xml.etree.ElementTree as ET
 
 from .packitem import PackItem
 

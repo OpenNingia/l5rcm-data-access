@@ -307,7 +307,7 @@ class DataFile(Data):
 
         print('saving to', self.path)
 
-        import lxml.etree as XML
+        import xml.etree.ElementTree as XML
         root = XML.Element('L5RCM')
 
         stuff = (self.clans + self.families + self.schools + self.spells +
@@ -330,6 +330,10 @@ class DataFile(Data):
             f.write_into("TraitDef", root)
 
         try:
-            XML.ElementTree(root).write(self.path, pretty_print=True, encoding='UTF-8', xml_declaration=True)
+            tree = XML.ElementTree(root)
+            # stdlib ElementTree has no lxml-style ``pretty_print`` kwarg;
+            # ``indent`` (Python 3.9+) produces the equivalent formatting.
+            XML.indent(tree)
+            tree.write(self.path, encoding='UTF-8', xml_declaration=True)
         except Exception as ex:
             print('save failed', ex)
