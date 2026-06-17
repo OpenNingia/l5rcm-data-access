@@ -16,7 +16,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import uuid
-import lxml.etree as ET
+import xml.etree.ElementTree as ET
 
 from .packitem import PackItem
 
